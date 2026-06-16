@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>A-Frame VR Room</title>
+
+  <!-- ===== 手机端 VR 回退：WebXR Polyfill =====
+       iOS Safari 完全没有 WebXR，部分安卓浏览器也不提供 immersive-vr，
+       因此 A-Frame 检测不到头显就会隐藏“进入 VR”按钮。
+       这个 polyfill 会补出 navigator.xr 并提供 Cardboard 式分屏立体 VR，
+       A-Frame 随即会重新显示 VR 按钮，手机上即可进入 VR 模式。
+       注意：必须在 aframe.min.js 之前加载并实例化。 -->
+  <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@2.0.3/build/webxr-polyfill.min.js"></script>
+  <script>
+    if (window.WebXRPolyfill) {
+      window.__webxrPolyfill = new WebXRPolyfill({ cardboard: true });
+    }
+  </script>
+
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="12A.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<a-scene
+  background="color: #87ceeb"
+  renderer="antialias: true; colorManagement: true"
+  vr-mode-ui="enabled: true"
+  device-orientation-permission-ui="enabled: true"
+>
+
+  <a-assets>
+    <a-asset-item id="roomModel" src="./assets/room.glb"></a-asset-item>
+    <a-asset-item id="markModel" src="./assets/mark.glb"></a-asset-item>
+  </a-assets>
+
+  <a-light type="ambient" intensity="0.6"></a-light>
+  <a-light type="directional" position="-6 8 4" intensity="0.9" color="#ffffff"></a-light>
+
+  <a-entity id="rig" position="0 1.6 8">
+    <a-camera
+      id="cam"
+      look-controls="pointerLockEnabled: true; touchEnabled: true"
+      wasd-controls="acceleration: 3"
+      keyboard-speed-boost="normal: 3; boost: 15"
+      simple-collision="radius: 0.15"
+    >
+      <a-entity
+        cursor="fuse: true; fuseTimeout: 2000"
+        raycaster="objects: .clickable; far: 20"
+        position="0 0 -1"
+        geometry="primitive: ring; radiusInner: 0.015; radiusOuter: 0.025"
+        material="color: white; shader: flat"
+        cursor-depth-fix="defaultDistance: 1; offset: 0.015"
+        animation__fusing="property: scale; startEvents: fusing;
+          from: 1 1 1; to: 0.3 0.3 0.3; dur: 2000"
+        animation__leave="property: scale; startEvents: mouseleave;
+          from: 0.3 0.3 0.3; to: 1 1 1; dur: 300"
+      ></a-entity>
+    </a-camera>
+  </a-entity>
+
+  <a-entity
+    id="room"
+    gltf-model="#roomModel"
+    door-manager
+    prop-manager
+    carry-manager
+    pickup-manager
+    tv-manager
+    whack-mole-manager
+    alarm-manager
+    audio-manager
+    teleport-manager="markScale: 0.97; markY: 0"
+    center-rig-on-model="eyeHeight: 2.4"
+    position="0 0 0"
+    rotation="0 0 0"
+    scale="1 1 1"
+  ></a-entity>
+
+  <a-entity id="outdoor-town" outdoor-town></a-entity>
+
+  <!-- ===== 瞬移点位 ===== -->
+  <!-- 1 初始点位 -->
+  <a-entity position="2.4 0 -0.7"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 2 客厅1 -->
+  <a-entity position="0.95 0 -0.8"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 3 客厅2 -->
+  <a-entity position="-0.95 0 -0.8"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 4 客厅3 -->
+  <a-entity position="-0.95 0 0"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 5 客厅4 -->
+  <a-entity position="-0.95 0 0.75"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 6 客厅5 -->
+  <a-entity position="0.94 0 0.75"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 7 客厅6 -->
+  <a-entity position="0.94 0 1.7"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 8 门外1 -->
+  <a-entity position="0.94 0 3.15"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 9 客厅7 -->
+  <a-entity position="2.4 0 0.758"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 10 客厅8 -->
+  <a-entity position="2.4 0 -1.8"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 11 客厅9 -->
+  <a-entity position="2.85 0 -2.05"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 12 客厅10 -->
+  <a-entity position="0.95 0 -1.8"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 13 客厅11 -->
+  <a-entity position="-0.25 0 -1.8"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 14 厨房1 -->
+  <a-entity position="-2.5 0 0"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 15 厨房2 -->
+  <a-entity position="-2.5 0 -1.16"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 16 厨房3 -->
+  <a-entity position="-3.95 0 -1.16"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 17 厨房4 -->
+  <a-entity position="-2.5 0 0.7"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 18 厨房5 -->
+  <a-entity position="-4.15 0 0"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 19 厨房6 -->
+  <a-entity position="-4.15 0 0.7"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 20 厨房7 -->
+  <a-entity position="-4.15 0 2.5"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 21 厨房8 -->
+  <a-entity position="-2.436 0 2.5"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 22 客厅12 -->
+  <a-entity position="3.23 0 -0.02"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 23 卧室1 -->
+  <a-entity position="4.48 0 -0.02"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 24 卧室2 -->
+  <a-entity position="4.48 0 -0.85"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 25 卧室3 -->
+  <a-entity position="4.48 0 -1.6"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 26 卧室4 -->
+  <a-entity position="5 0 -1.6"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 27 卧室5 -->
+  <a-entity position="4.48 0 0.85"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 28 卧室6 -->
+  <a-entity position="5.75 0 0.85"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 29 卧室7 -->
+  <a-entity position="5.75 0 -0.35"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 30 卧室8 -->
+  <a-entity position="6.9 0 -1"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 31 卧室9 -->
+  <a-entity position="6.85 0 -2"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 32 卧室10 -->
+  <a-entity position="6.51 0 -1.6"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 33 卧室11 -->
+  <a-entity position="7.12 0 1.05"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 34 卧室12 -->
+  <a-entity position="7.4 0 -0.02"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 35 浴室1 -->
+  <a-entity position="8.73 0 -0.02"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 36 浴室2 -->
+  <a-entity position="8.73 0 -0.668"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 37 浴室3 -->
+  <a-entity position="9.6 0 0.47"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 38 浴室4 -->
+  <a-entity position="8.73 0 0.47"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 39 浴室5 -->
+  <a-entity position="9.2 0 -0.4"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <!-- 40 浴室6 -->
+  <a-entity position="9.515 0 -0.73"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+
+  <!-- Outdoor teleport points -->
+  <a-entity position="2.1 0 7.15"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <a-entity position="0 0 8.65"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <a-entity position="-28 0 17.1"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <a-entity position="8.2 0 17.1"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+  <a-entity position="18 0 27"
+    gltf-model="#markModel"
+    rotation="0 0 0"
+    smooth-teleport></a-entity>
+
+</a-scene>
+
+  <script>
+    /* ── pickup-manager 注册可拾取物体 ──
+       在场景加载完成后调用 window.PickupManager.register()
+       第一个参数是 Blender 里的节点名，第二个参数是可选配置。
+
+       示例（把 apple 注册为可拾取）：
+       window.PickupManager.register("apple");
+
+       带配置示例：
+       window.PickupManager.register("apple", {
+         fuseDur:      2000,   // 凝视拾起时长(ms)
+         carryDist:    0.5,    // 持物距相机距离(m)
+         carryOffsetY: -0.1    // 垂直偏移(m)
+       });
+
+       注意：节点名必须与 GLB 中的节点名完全一致。
+       可同时注册多个物体，每次只能持一个。
+    ── */
+    document.querySelector("a-scene").addEventListener("loaded", function () {
+      // 在此处添加你想拾取的物体节点名
+      // window.PickupManager.register("apple");
+      // window.PickupManager.register("kettle");
+    });
+  </script>
+  <script>
+    /* ── AudioContext 解锁 ──
+       浏览器要求 AudioContext 必须在用户手势后才能发声。
+       监听页面任意一次点击/触摸，提前创建并 resume ctx，
+       之后凝视触发响铃时就已经可以正常播放了。 */
+    function _unlockAudio() {
+      if (window._sharedAudioCtx) return;
+      try {
+        window._sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window._sharedAudioCtx.resume();
+        console.log("[alarm] AudioContext 已解锁");
+      } catch(e) {}
+      document.removeEventListener("click",      _unlockAudio);
+      document.removeEventListener("touchstart", _unlockAudio);
+    }
+    document.addEventListener("click",      _unlockAudio, { once: true });
+    document.addEventListener("touchstart", _unlockAudio, { once: true });
+  </script>
+
+  <!-- ===== 面包提示 HUD ===== -->
+  <div id="bread-hint">
+    <div id="bread-hint-inner">
+      <span id="bread-hint-icon">🍞</span>
+      <span id="bread-hint-text">Try putting the bread into the oven to bake it!</span>
+    </div>
+  </div>
+
+  <!-- ===== 烘烤进度条 HUD ===== -->
+  <div id="oven-baking-wrap">
+    <span class="oven-baking-label">🔥 Baking…</span>
+    <div id="oven-baking-track">
+      <div id="oven-baking-fill"></div>
+    </div>
+  </div>
+
+  <style>
+    /* 共用定位基础 */
+    #bread-hint,
+    #oven-baking-wrap {
+      position: fixed;
+      bottom: clamp(40px, 8vh, 80px);
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      max-width: 92vw;
+    }
+    #bread-hint.visible,
+    #oven-baking-wrap.visible { opacity: 1; }
+
+    /* 面包提示 */
+    #bread-hint-inner {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 2vw, 12px);
+      background: rgba(0,0,0,0.62);
+      border: 1px solid rgba(255,220,100,0.55);
+      border-radius: 32px;
+      padding: clamp(8px,2vh,14px) clamp(14px,4vw,28px);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 18px rgba(255,200,60,0.25);
+    }
+    #bread-hint-icon {
+      font-size: clamp(16px,4vw,24px);
+      animation: breadBounce 1.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    #bread-hint-text {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: clamp(11px,3vw,16px);
+      color: #ffe680;
+      letter-spacing: 0.02em;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+    @keyframes breadBounce {
+      0%,100% { transform: translateY(0);    }
+      50%      { transform: translateY(-4px); }
+    }
+
+    /* 进度条 */
+    #oven-baking-wrap {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px,2.5vw,14px);
+      background: rgba(0,0,0,0.62);
+      border: 1px solid rgba(255,160,60,0.5);
+      border-radius: 32px;
+      padding: clamp(8px,2vh,13px) clamp(14px,4vw,28px);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 18px rgba(255,130,30,0.2);
+    }
+    .oven-baking-label {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: clamp(11px,3vw,16px);
+      color: #ffaa44;
+      flex-shrink: 0;
+    }
+    #oven-baking-track {
+      width: clamp(100px,30vw,200px);
+      height: clamp(7px,1.5vw,11px);
+      background: rgba(255,255,255,0.12);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    #oven-baking-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg,#ff7700,#ffdd00);
+      border-radius: 6px;
+    }
+  </style>
+
+  <script>
+    /* 面包提示控制器 */
+    window.BreadHint = {
+      _el: null, _timer: null,
+      _get: function () {
+        if (!this._el) this._el = document.getElementById("bread-hint");
+        return this._el;
+      },
+      show: function () {
+        clearTimeout(this._timer);
+        var el = this._get(); if (el) el.classList.add("visible");
+      },
+      hide: function () {
+        var self = this;
+        this._timer = setTimeout(function () {
+          var el = self._get(); if (el) el.classList.remove("visible");
+        }, 300);
+      }
+    };
+
+    /* 烘烤进度条控制器 */
+    window.OvenHint = (function () {
+      var _wrap = null, _fill = null, _raf = null;
+      var BAKE_DUR = 5000;
+      function _init() {
+        if (_wrap) return;
+        _wrap = document.getElementById("oven-baking-wrap");
+        _fill = document.getElementById("oven-baking-fill");
+      }
+      return {
+        showBaking: function () {
+          _init();
+          _fill.style.width = "0%";
+          _wrap.classList.add("visible");
+          var start = null;
+          cancelAnimationFrame(_raf);
+          function step(ts) {
+            if (!start) start = ts;
+            var pct = Math.min((ts - start) / BAKE_DUR * 100, 100);
+            _fill.style.width = pct + "%";
+            if (pct < 100) {
+              _raf = requestAnimationFrame(step);
+            } else {
+              setTimeout(function () {
+                _wrap.classList.remove("visible");
+                setTimeout(function () { _fill.style.width = "0%"; }, 500);
+              }, 600);
+            }
+          }
+          _raf = requestAnimationFrame(step);
+        }
+      };
+    })();
+  </script>
+
+</body>
+</html>
